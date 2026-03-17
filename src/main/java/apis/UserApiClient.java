@@ -1,0 +1,47 @@
+package apis;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
+import static io.restassured.RestAssured.given;
+
+public class UserApiClient {
+    private static UserApiClient instance;
+    private final String baseUrl;
+
+    private UserApiClient(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public static UserApiClient getInstance(String baseUrl) {
+        if (instance == null) {
+            instance = new UserApiClient(baseUrl);
+        }
+        return instance;
+    }
+
+    public Response createUser(JsonNode payload) {
+        return given()
+                .baseUri(baseUrl)
+                .contentType(ContentType.JSON)
+                .body(payload)
+                .when()
+                .post("/api/v1/users");
+    }
+
+    public Response getUserById(String userId) {
+        return given()
+                .baseUri(baseUrl)
+                .pathParam("id", userId)
+                .when()
+                .get("/api/v1/users/{id}");
+    }
+
+    public Response deleteUser(String userId) {
+        return given()
+                .baseUri(baseUrl)
+                .when()
+                .delete("/api/v1/users/" + userId);
+    }
+}
