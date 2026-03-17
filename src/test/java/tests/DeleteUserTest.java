@@ -11,7 +11,6 @@ import utils.WireMockService;
 import utils.WireMockStubs;
 
 import static com.codeborne.selenide.Condition.text;
-import static org.hamcrest.Matchers.equalTo;
 
 public class DeleteUserTest extends BaseTest {
 
@@ -42,17 +41,11 @@ public class DeleteUserTest extends BaseTest {
                 .log().ifValidationFails()
                 .statusCode(201);
 
-        // Проверям, что пользователь создался через API
-        response = apiClient.getUserById(userId);
-        response.then()
-                .statusCode(200)
-                .body("id", equalTo("123"));
-
         // Проверяем, что он появился на странице /admin/users
         Selenide.open("/api/v1/users/" + userId);
         Selenide.$("body").shouldHave(text("{\"id\": \"123\"}"));
 
-        // Удаляем пользователя через апи
+        // Удаляем пользователя через API
         response = apiClient.deleteUser(userId);
         response.then()
                 .log().ifValidationFails()
